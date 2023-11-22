@@ -34,12 +34,64 @@
     </header>
     <main>
         <div class="new-transaction-container">
-            
+            <h2 class="section-title">New Transaction</h2>
+            <div class="new-transaction-buttons">
+                <button class="expense-button">Expense</button>
+                <button class="income-button">Income</button>
+            </div>
+
+            <div class="new-trans-title-container">
+                <label>Text</label>
+                <input type="text" class="text-input input-box">
+            </div>
+            <div class="new-trans-amount-container">
+                <label>Amount</label>
+                <input type="text" class="amount-input input-box">
+            </div>
+
+            <div class="new-trans-date-container">
+                <label>Date</label>
+                <input type="date" class="date-input input-box">
+            </div>
+
+            <div class="new-trans-category-container">
+                <label>Category</label>
+                <input type="text">
+            </div>
+
+            <button class="new-trans-btn">Add</button>
         </div>
 
-        <div class="transactions-container"></div>
+        <div class="transactions-container">
+            <h2 class="section-title sm-margin-b">Transactions</h2>
+            <div class="transactions">
+                <div class="transaction">
+                    <span class="title">bought pizza</span>
+                    <span class="date">11-12-2023</span>
+                    <span class="amount">35$</span>
+                    <div class="icons">
+                        <ion-icon name="create-outline" id="edit-btn"></ion-icon>
+                        <ion-icon name="trash-outline" id="delete-btn"></ion-icon>
+                    </div>
+                    
+                </div>
+                <div class="transaction">
+                    <span class="title">bought pizza</span>
+                    <span class="date">11-12-2023</span>
+                    <span class="amount">35$</span>
+                    <div class="icons">
+                        <ion-icon name="create-outline" id="edit-btn"></ion-icon>
+                        <ion-icon name="trash-outline" id="delete-btn"></ion-icon>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
 
     </main>
-    
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script src="script.js"></script>
 </body>
 </html>
