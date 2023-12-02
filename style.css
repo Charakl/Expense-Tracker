@@ -113,6 +113,69 @@ main {
     border-radius: 1rem;
 }
 
+/* Style the custom dropdown container */
+.custom-dropdown {
+    position: relative;
+    cursor: pointer;
+    width: 16rem;
+    z-index: 10;
+    font-size: 1.6rem;
+    /* margin: 0 auto;
+    margin-bottom: 4rem; */
+}
+
+/* Style the selected option */
+.container {
+    /* padding: 0.6rem; */
+    border: 2px solid var(--dark-grey-color);
+    border-radius: 1rem;
+    background-color: #fff;
+    display: inline-block;
+    /* width: 16rem; */
+    display: flex;
+    justify-content: center;
+    /* border-bottom-left-radius: 1px solid black;
+    border-bottom-right-radius: 1px solid black; */
+}
+
+.container.dropdown-shown {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+/* Style the dropdown list */
+.dropdown-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: none;
+    top: 3.4rem;
+    position: absolute;
+    background-color: #fff;
+    border: 2px solid var(--dark-grey-color);
+    border-radius: 1rem;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    width: 16rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Style the dropdown list items */
+.dropdown-list li {
+    padding: 8px;
+    cursor: pointer;
+    text-align: center;
+}
+
+.dropdown-list li:not(:last-child) {
+    border-bottom: 1px solid black;
+}
+
+
+.dropdown-list.show {
+    display: block;
+}
+
 /* /////////////////////////////////////////////// */
 /* Transaction section */
 .transactions {
@@ -171,4 +234,78 @@ ion-icon {
 
 .sm-margin-b {
     margin-bottom: 2rem;
+}
+
+
+/* CLASSES TO MAKE MODAL WORK */
+.show-modal {
+    font-size: 2rem;
+    font-weight: 600;
+    padding: 1.75rem 3.5rem;
+    margin: 5rem 2rem;
+    border: none;
+    background-color: #fff;
+    color: #444;
+    border-radius: 10rem;
+    cursor: pointer;
+}
+  
+.close {
+    position: absolute;
+    top: -0.2rem;
+    right: 1.4rem;
+    font-size: 5rem;
+    color: #333;
+    cursor: pointer;
+    border: none;
+    /* border: 1px solid red; */
+    background: none;
+}
+
+
+  
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 70%;
+    background-color: white;
+    padding: 3rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 3rem 5rem rgba(0, 0, 0, 0.3);
+    z-index: 10;
+    display: grid;
+    /* grid-template-columns: 1fr 1fr; */
+    grid-template-rows: 1fr 8rem;
+    font-size: 2rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.modal-btns {
+    grid-row: 2;
+    grid-column: 2;
+    justify-self: right;
+    align-self: end;
+}
+
+.modalBtn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 1rem;
+    font-size: 2rem;
+    width: 10rem;
+}
+  
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    z-index: 5;
 }
