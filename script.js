@@ -4,14 +4,22 @@ const expences = document.querySelector('.expenses-number');
 const income = document.querySelector('.income-number');
 const username = document.querySelector('.username');
 // new-transaction-container selectors
+const newTransBtns = document.querySelector('.new-transaction-buttons');
+const expenseBtn = document.querySelector('.expense-button');
+const incomeBtn = document.querySelector('.income-button');
+
 const text = document.querySelector('.text-input');
-const amount = document.querySelector('.amount-input');
-const date = document.querySelector('.date-input');
 const addBtn = document.querySelector('.new-trans-btn');
 const transactionsEl = document.querySelector('.transactions');
 const dropdownList = document.querySelector(".dropdown-list");
 const selectedOption = document.querySelector(".selected-option");
 const container = document.querySelector(".container");
+
+
+const titleEl = document.querySelector('.text-input');
+const amountEl = document.querySelector('.amount-input');
+const dateEl = document.querySelector('.date-input');
+const categoryEl = document.querySelector('.selected-option');
 
 const modal = document.querySelector('.modal');
 // const modalContainer = document.querySelector('.modal');
@@ -47,12 +55,45 @@ const modalDeleteBtn = document.querySelector('.proceed');
 // displayFormattedDate();
 
 let transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
+let editTransactionIndex = '';
+
+newTransBtns.addEventListener('click', (e) => {
+    console.log(e.target);
+    // const expenseBtn = e.target.closest('.expense-button');
+    // const incomeBtn = e.target.closest('.income-button');
+    if (e.target === expenseBtn) {
+        console.log('expense');
+        expenseBtn.classList.add('expense-btn-active');
+        incomeBtn.classList.remove('income-btn-active');
+    } else if (e.target === incomeBtn) {
+        console.log('income');
+        expenseBtn.classList.remove('expense-btn-active');
+        incomeBtn.classList.add('income-btn-active');
+    }
+
+    if (incomeBtn.classList.contains('income-btn-active')) {
+        newTransBtns.style.borderBottom ='3px solid var(--dark-green-color)';
+    } else {
+        newTransBtns.style.borderBottom ='3px solid var(--red-color)';
+    }
+})
 
 addBtn.addEventListener('click', function () {
-    let title = document.querySelector('.text-input').value;
-    let amount = document.querySelector('.amount-input').value;
-    let date = document.querySelector('.date-input').value;
-    let category = document.querySelector('.selected-option').textContent;
+
+    if (editTransactionIndex) {
+        editTransaction(editTransactionIndex);
+        return;
+    }
+    let title = titleEl.value;
+    let amount = amountEl.value;
+    let date = dateEl.value;
+    let category = categoryEl.textContent;
+    let type = 'expense';
+    if (incomeBtn.classList.contains('income-btn-active')) {
+        type = 'income';
+    } else {
+        type = 'expense';
+    }
 
     // Date based on user's locale
     const userLocale = navigator.language || navigator.userLanguage;
@@ -70,10 +111,11 @@ addBtn.addEventListener('click', function () {
     console.log("Amount:", amount);
     console.log("Date:", date);
     console.log("Category:", category);
+    console.log("Type:", type);
 
     const newTransaction = {
         title: title,
-        type: 'expense',
+        type: type,
         amount: amount,
         date: formattedDate,
         category: category,
@@ -86,11 +128,37 @@ addBtn.addEventListener('click', function () {
     displayTransactions(transactionsArr);
 
     // Clear input fields
-    console.log(title);
+    clearInputFields();
+});
+
+function clearInputFields() {
     document.querySelector('.text-input').value = document.querySelector('.amount-input').value = document.querySelector('.date-input').value = '' ;
     document.querySelector('.selected-option').textContent = 'Select';
-    
-});
+    addBtn.textContent = 'Add';
+    editTransactionIndex = '';
+}
+
+function editTransaction(transactionIndex) {
+    let title = titleEl.value;
+    let amount = amountEl.value;
+    let date = dateEl.value;
+    let category = categoryEl.textContent;
+    if (incomeBtn.classList.contains('income-btn-active')) {
+        type = 'income';
+    } else {
+        type = 'expense';
+    }
+    console.log(title);
+
+    transactionsArr[transactionIndex].title = title;
+    transactionsArr[transactionIndex].amount = amount;
+    transactionsArr[transactionIndex].date = date;
+    transactionsArr[transactionIndex].category = category;
+    transactionsArr[transactionIndex].type = type;
+    localStorage.setItem('transactions', JSON.stringify(transactionsArr));
+    displayTransactions();
+    clearInputFields();
+}
 
 function displayTransactions(transactionsArr) {
     transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -98,7 +166,7 @@ function displayTransactions(transactionsArr) {
     console.log('array: ' + transactionsArr);
     transactionsArr.forEach((trans, i) => {
         const transactionHtml = `
-            <div class="transaction" data-index="${trans.id}">
+            <div class="transaction" data-index="${trans.id}" style="border-left: ${trans.type === 'expense' ? '1rem solid var(--red-color)' : '1rem solid var(--dark-green-color)'};">
                 <span class="title">${trans.title}</span>
                 <span class="date">${trans.date}</span>
                 <span class="amount">${trans.amount}</span>
@@ -185,7 +253,7 @@ transactionsEl.addEventListener('click', (event) => {
     console.log(transactionId);
 
     if (editButton) {
-        // handleEditAction(transactionId);
+        handleEditAction(transactionId);
         console.log(editButton);
     } else if (deleteButton) {
         modal.classList.remove('hidden');
@@ -216,4 +284,37 @@ function handleDeleteAction(transId) {
     }
     modal.classList.add('hidden');
     overlay.classList.add('hidden');
+}
+
+function handleEditAction(transId) {
+    console.log(transId);
+    const transactionIndex = transactionsArr.findIndex(trans => trans.id === Number(transId));
+    console.log(transactionIndex);
+    if (transactionIndex !== -1) {
+        console.log(transactionsArr[transactionIndex]);
+        const { title, amount, date, category, type } = transactionsArr[transactionIndex];
+        editTransactionIndex = transactionIndex;
+        setFields(title, amount, date, category, type);
+        // localStorage = JSON.parse(localStorage.getItem(transactions[transactionIndex]))
+        // displayTransactions();
+    }
+}
+// let transactionsArr = JSON.parse(localStorage.getItem('transactions'))
+
+function setFields(title, amount, date, category, type) {
+    titleEl.value = title;
+    amountEl.value = amount;
+    dateEl.value = date;
+    categoryEl.textContent = category;
+    addBtn.textContent = 'Save';
+    if (type === 'expense') {
+        expenseBtn.classList.add('expense-btn-active');
+        incomeBtn.classList.remove('income-btn-active');
+        newTransBtns.style.borderBottom ='3px solid var(--red-color)';
+    } else {
+        expenseBtn.classList.remove('expense-btn-active');
+        incomeBtn.classList.add('income-btn-active');
+        newTransBtns.style.borderBottom ='3px solid var(--dark-green-color)';
+    }
+    // editTransaction(transactionIndex);
 }
