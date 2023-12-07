@@ -1,5 +1,5 @@
 // header selectors
-const balance = document.querySelector('.balance-number');
+const balanceEl = document.querySelector('.balance-number');
 const expences = document.querySelector('.expenses-number');
 const income = document.querySelector('.income-number');
 const username = document.querySelector('.username');
@@ -7,6 +7,12 @@ const username = document.querySelector('.username');
 const newTransBtns = document.querySelector('.new-transaction-buttons');
 const expenseBtn = document.querySelector('.expense-button');
 const incomeBtn = document.querySelector('.income-button');
+
+// transactions buttons
+const radioBtnsContainer = document.querySelector('.radio-btns-container');
+const transRadioBtn = document.getElementById('trans-radio-btn');
+const expensesRadioBtn = document.getElementById('expenses-radio-btn');
+const incomeRadioBtn = document.getElementById('income-radio-btn');
 
 const text = document.querySelector('.text-input');
 const addBtn = document.querySelector('.new-trans-btn');
@@ -22,45 +28,44 @@ const dateEl = document.querySelector('.date-input');
 const categoryEl = document.querySelector('.selected-option');
 
 const modal = document.querySelector('.modal');
-// const modalContainer = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
 const cancelBtns = document.querySelectorAll('.close-modal');
 const modalDeleteBtn = document.querySelector('.proceed');
-// const currentDate = new Date();
-// const formattedDate = new Intl.DateTimeFormat('el-GR', {
-//   year: 'numeric',
-//   month: '2-digit',
-//   day: '2-digit',
-// }).format(currentDate);
-
-// console.log('Formatted date:', formattedDate);
-// Function to format and display the date
-// function displayFormattedDate() {
-//     const selectedDate = date.value;
-//     console.log(date.value);
-
-//     const formattedDate = new Intl.DateTimeFormat('el-GR', {
-//         year: 'numeric',
-//         month: '2-digit',
-//         day: '2-digit'
-//     }).format(new Date(selectedDate));
-
-//     date.value = formattedDate;
-// }
-
-// // Attach the input event listener
-// date.addEventListener('input', displayFormattedDate);
-
-// Call the function on page load
-// displayFormattedDate();
 
 let transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
 let editTransactionIndex = '';
 
+const userLocale = navigator.language || navigator.userLanguage;
+const options = {
+    style: 'currency',
+    currency: 'EUR'
+}
+
+const dateOptions = {
+    day: '2-digit', 
+    month: '2-digit',
+    year: 'numeric'
+}
+
+const transStyle = {
+    borderTopLeftRadius: '1rem',
+    borderBottomLeftRadius: '1rem',
+    padding: 0
+};
+
+const categoryIcons = {
+    Transportation: 'car',
+    Food: 'restaurant',
+    Health: 'medkit',
+    Entertainment: 'game-controller',
+    Education: 'school',
+    Travel: 'airplane',
+    Housing: 'home',
+    Other: 'ellipsis-horizontal-circle',
+  };
+
 newTransBtns.addEventListener('click', (e) => {
     console.log(e.target);
-    // const expenseBtn = e.target.closest('.expense-button');
-    // const incomeBtn = e.target.closest('.income-button');
     if (e.target === expenseBtn) {
         console.log('expense');
         expenseBtn.classList.add('expense-btn-active');
@@ -86,7 +91,6 @@ addBtn.addEventListener('click', function () {
     }
     let title = titleEl.value;
     let amount = amountEl.value;
-    let date = dateEl.value;
     let category = categoryEl.textContent;
     let type = 'expense';
     if (incomeBtn.classList.contains('income-btn-active')) {
@@ -95,21 +99,13 @@ addBtn.addEventListener('click', function () {
         type = 'expense';
     }
 
-    // Date based on user's locale
-    const userLocale = navigator.language || navigator.userLanguage;
     console.log(userLocale);
-
-    const formattedDate = new Date(date).toLocaleDateString(userLocale, {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-    });
-
-    console.log('Formatted date:', formattedDate);
+    const now = new Date();
+    const userDate = new Intl.DateTimeFormat(userLocale, dateOptions).format(now);
 
     console.log("Text:", title);
     console.log("Amount:", amount);
-    console.log("Date:", date);
+    console.log("Date:", userDate);
     console.log("Category:", category);
     console.log("Type:", type);
 
@@ -117,7 +113,7 @@ addBtn.addEventListener('click', function () {
         title: title,
         type: type,
         amount: amount,
-        date: formattedDate,
+        date: userDate,
         category: category,
         id: new Date().getTime()
     }
@@ -132,7 +128,7 @@ addBtn.addEventListener('click', function () {
 });
 
 function clearInputFields() {
-    document.querySelector('.text-input').value = document.querySelector('.amount-input').value = document.querySelector('.date-input').value = '' ;
+    document.querySelector('.text-input').value = document.querySelector('.amount-input').value = '' ;
     document.querySelector('.selected-option').textContent = 'Select';
     addBtn.textContent = 'Add';
     editTransactionIndex = '';
@@ -160,42 +156,77 @@ function editTransaction(transactionIndex) {
     clearInputFields();
 }
 
+let expenseSum = 0, incomeSum = 0;
+
 function displayTransactions(transactionsArr) {
     transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
     transactionsEl.innerHTML = '';
     console.log('array: ' + transactionsArr);
+    expenseSum = incomeSum = 0;
+
     transactionsArr.forEach((trans, i) => {
-        const transactionHtml = `
-            <div class="transaction" data-index="${trans.id}" style="border-left: ${trans.type === 'expense' ? '1rem solid var(--red-color)' : '1rem solid var(--dark-green-color)'};">
-                <span class="title">${trans.title}</span>
-                <span class="date">${trans.date}</span>
-                <span class="amount">${trans.amount}</span>
-                <div class="icons">
-                    <ion-icon name="create-outline" id="edit-btn"></ion-icon>
-                    <ion-icon name="trash-outline" id="delete-btn"></ion-icon>
-                </div>
-                
-            </div>
+        let transactionHtml = '';
+        const transRadioStyle = transRadioBtn.checked ? `border-left: ${trans.type === 'expense' ? '1rem solid var(--red-color)' : '1rem solid var(--dark-green-color)'}` : '';
+
+        const expensesRadioStyle =  `
+            border-top-left-radius: 1rem;
+            border-bottom-left-radius: 1rem;
+            padding-left: 0;
+        ` ;
+
+        const incomeRadioStyle = `
+            border-left: 1rem solid var(--dark-green-color);
         `;
+
+        if (transRadioBtn.checked || (expensesRadioBtn.checked && trans.type === 'expense') || (incomeRadioBtn.checked && trans.type === 'income')) {
+            let transStyle;
+            if (expensesRadioBtn.checked) {
+                transStyle = expensesRadioStyle;
+            } else if (transRadioBtn.checked) {
+                transStyle = transRadioStyle;
+            } else {
+                transStyle = incomeRadioStyle;
+            }
+            transactionHtml = `
+                <div class="transaction" data-index="${trans.id}" style="${transStyle}">
+                    <div class="icon-title-container">
+                        <div class="tooltip">
+                        <ion-icon name="${categoryIcons[trans.category]}" class="category-icon ${expensesRadioBtn.checked ? '' : 'hidden'}"></ion-icon>
+                            <span class="tooltiptext">${trans.category}</span>
+                        </div>
+                        
+                        <span class="title">${trans.title}</span>
+                    </div>
+                    <span class="date">${trans.date}</span>
+                    <span class="amount">${new Intl.NumberFormat(userLocale, options).format(trans.amount)}</span>
+                    <div class="icons">
+                        <ion-icon name="create-outline" id="edit-btn"></ion-icon>
+                        <ion-icon name="trash-outline" id="delete-btn"></ion-icon>
+                    </div>
+                </div>
+            `;
+        }
+// ${expensesRadioBtn.checked ? `<ion-icon name="${categoryIcons[trans.category]}" class="category-icon"></ion-icon>` : ''}
+
         transactionsEl.insertAdjacentHTML('afterbegin', transactionHtml);
-    })
+
+        if (trans.type === 'expense') {
+            expenseSum += Number(trans.amount);
+        } else if (trans.type === 'income') {
+            incomeSum += Number(trans.amount);
+        }
+    });
+
+    console.log(expenseSum, incomeSum);
+    expences.textContent = new Intl.NumberFormat(userLocale, options).format(expenseSum);
+    income.textContent = new Intl.NumberFormat(userLocale, options).format(incomeSum);
+
+    const balance = incomeSum - expenseSum;
+    balanceEl.textContent = new Intl.NumberFormat(userLocale, options).format(balance);
 }
 
 function initialize() {
     displayTransactions(transactionsArr);
-    // Attach the delete event listener once during initialization
-    // transactionsEl.addEventListener('click', (event) => {
-    //     const deleteButton = event.target.closest('#delete-btn');
-    //     const transactionId = event.target.closest('.transaction').getAttribute('data-index');
-
-    //     if (deleteButton) {
-    //         modal.classList.remove('hidden');
-    //         overlay.classList.remove('hidden');
-    //         modalDeleteBtn.addEventListener('click', function() {
-    //             handleDeleteAction(transactionId);
-    //         });
-    //     }
-    // });
 }
 initialize();
 
@@ -207,25 +238,10 @@ function handleItemClick(event) {
         selectedOption.textContent = event.target.textContent;
 
         // Close the dropdown
-        // dropdownList.style.display = "none";
         dropdownList.classList.remove("show");
         container.classList.remove("dropdown-shown");
         const selectedValue = selectedOption.textContent;
         console.log(selectedValue);
-        // switch (selectedValue) {
-        //     case 'All':
-        //         displayAllTasks();
-        //         break;
-        //     case 'Completed':
-        //         displayCompletedTasks();
-        //         break;
-        //     case 'Pending':
-        //         displayPendingTasks();
-        //         break;
-        //     case 'Sort':
-        //         displaySortedTasks();
-        //         break;
-        // }
     }
 }
 
@@ -244,6 +260,7 @@ document.querySelector(".custom-dropdown").addEventListener("mouseleave", functi
     container.classList.remove("dropdown-shown");
 });
 
+radioBtnsContainer.addEventListener('click', displayTransactions);
 
 // Edit, Delete, and Complete/Uncomplete Actions
 transactionsEl.addEventListener('click', (event) => {
@@ -265,9 +282,6 @@ transactionsEl.addEventListener('click', (event) => {
                 overlay.classList.add('hidden');
             });
         });
-
-        // handleDeleteAction(transactionId);
-        // console.log(deleteButton);
     } 
 });
 
@@ -295,11 +309,8 @@ function handleEditAction(transId) {
         const { title, amount, date, category, type } = transactionsArr[transactionIndex];
         editTransactionIndex = transactionIndex;
         setFields(title, amount, date, category, type);
-        // localStorage = JSON.parse(localStorage.getItem(transactions[transactionIndex]))
-        // displayTransactions();
     }
 }
-// let transactionsArr = JSON.parse(localStorage.getItem('transactions'))
 
 function setFields(title, amount, date, category, type) {
     titleEl.value = title;
@@ -316,5 +327,28 @@ function setFields(title, amount, date, category, type) {
         incomeBtn.classList.add('income-btn-active');
         newTransBtns.style.borderBottom ='3px solid var(--dark-green-color)';
     }
-    // editTransaction(transactionIndex);
 }
+
+// Tooltip
+document.addEventListener("DOMContentLoaded", function () {
+    var tooltipTrigger = document.querySelector(".tooltip-trigger");
+    var tooltip = document.getElementById("myTooltip");
+  
+    tooltipTrigger.addEventListener("mouseover", function () {
+      showTooltip(tooltip);
+    });
+  
+    tooltipTrigger.addEventListener("mouseout", function () {
+      hideTooltip(tooltip);
+    });
+  });
+  
+  function showTooltip(tooltip) {
+    tooltip.style.visibility = "visible";
+    tooltip.style.opacity = 1;
+  }
+  
+  function hideTooltip(tooltip) {
+    tooltip.style.visibility = "hidden";
+    tooltip.style.opacity = 0;
+  }

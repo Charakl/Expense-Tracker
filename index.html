@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+    <!-- Include jQuery -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <!-- Include jQuery UI -->
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
     <link rel="stylesheet" href="style.css">
     <title>Expense Tracker</title>
 </head>
@@ -21,7 +27,7 @@
             </div>
             <div class="expenses-container">
                 <p class="expenses-title">Expenses</p>
-                <p class="expenses-number number">600$</p>
+                <p class="expenses-number number"></p>
             </div>
             <div class="income-container">
                 <p class="income-title">Income</p>
@@ -44,14 +50,14 @@
             </div>
             <div class="new-trans-amount-container">
                 <label>Amount</label>
-                <input type="text" class="amount-input input-box">
+                <input type="number" class="amount-input input-box">
             </div>
 
-            <div class="new-trans-date-container">
+            <!-- <div class="new-trans-date-container">
                 <label>Date</label>
                 <input type="date" class="date-input input-box">
                 <p id="formattedDate"></p>
-            </div>
+            </div> -->
 
             <div class="new-trans-category-container">
                 <label>Category</label>
@@ -78,7 +84,7 @@
                         <li data-value="entertainment">Entertainment</li>
                         <li data-value="education">Education</li>
                         <li data-value="travel">Travel</li>
-                        <li data-value="miscellaneous">Miscellaneous</li>
+                        <li data-value="other">Other</li>
                     </ul>
                 </div>
             </div>
@@ -88,6 +94,23 @@
 
         <div class="transactions-container">
             <h2 class="section-title sm-margin-b">Transactions</h2>
+            <!-- <div class="buttons-container">
+                <button class="show-trans-btn">Transactions</button>
+                <button class="show-expenses-btn">Expences</button>
+                <button class="show-income-btn">Income</button>
+            </div> -->
+            <!-- Radio buttons -->
+            <div class="radio-btns-container">
+                <input type="radio" name="category" id="trans-radio-btn" class="radio-btn" checked>
+                <label for="trans-radio-btn" class="custom-btn">Transactions</label>
+
+                <input type="radio" name="category" id="expenses-radio-btn" class="radio-btn" >
+                <label for="expenses-radio-btn" class="custom-btn">Expenses</label>
+
+                <input type="radio" name="category" id="income-radio-btn" class="radio-btn" >
+                <label for="income-radio-btn" class="custom-btn">Income</label>
+            </div>
+                
             <div class="transactions"></div>
         </div>
 
