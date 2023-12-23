@@ -4,6 +4,7 @@ const expences = document.querySelector('.expenses-number');
 const income = document.querySelector('.income-number');
 const username = document.querySelector('.username');
 // new-transaction-container selectors
+const newTransContainer = document.querySelector('.new-transaction-container');
 const newTransBtns = document.querySelector('.new-transaction-buttons');
 const expenseBtn = document.querySelector('.expense-button');
 const incomeBtn = document.querySelector('.income-button');
@@ -24,8 +25,8 @@ const container = document.querySelector(".container");
 
 const titleEl = document.querySelector('.text-input');
 const amountEl = document.querySelector('.amount-input');
-const dateEl = document.querySelector('.date-input');
 const categoryEl = document.querySelector('.selected-option');
+const sectionTitleEl = document.querySelector('.section-title');
 
 const modal = document.querySelector('.modal');
 const overlay = document.querySelector('.overlay');
@@ -34,6 +35,9 @@ const modalDeleteBtn = document.querySelector('.proceed');
 
 let transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
 let editTransactionIndex = '';
+let balanceChart;
+let expensesChart;
+let incomeChart;
 
 const userLocale = navigator.language || navigator.userLanguage;
 const options = {
@@ -64,16 +68,53 @@ const categoryIcons = {
     Other: 'ellipsis-horizontal-circle',
   };
 
+  let expenseSum, incomeSum;
+
+  const xValues = ["Expenses", "Income"];
+  const yValues = [expenseSum, incomeSum];
+  const barColors = [
+      "#b91d47",
+      "#00aba9",
+  ];
+
+let myChart = new Chart("myChart", {
+    type: "doughnut",
+    data: {
+      labels: xValues,
+      datasets: [{
+        backgroundColor: barColors,
+        data: yValues
+      }]
+    },
+    options: {
+      layout: {
+        padding: {
+          left: 0,
+          right: 0,
+          top: 0,
+          bottom: 0
+        }
+      },
+      legend: {
+        display: false
+      },
+      maintainAspectRatio: false
+    }
+  });
+
 newTransBtns.addEventListener('click', (e) => {
     console.log(e.target);
+    const categoryContainer = document.querySelector('.new-trans-category-container');
     if (e.target === expenseBtn) {
         console.log('expense');
         expenseBtn.classList.add('expense-btn-active');
         incomeBtn.classList.remove('income-btn-active');
+        categoryContainer.classList.remove('hidden');
     } else if (e.target === incomeBtn) {
         console.log('income');
         expenseBtn.classList.remove('expense-btn-active');
         incomeBtn.classList.add('income-btn-active');
+        categoryContainer.classList.add('hidden');
     }
 
     if (incomeBtn.classList.contains('income-btn-active')) {
@@ -128,16 +169,16 @@ addBtn.addEventListener('click', function () {
 });
 
 function clearInputFields() {
-    document.querySelector('.text-input').value = document.querySelector('.amount-input').value = '' ;
+    document.querySelector('.text-input').value = document.querySelector('.amount-input').value = '';
     document.querySelector('.selected-option').textContent = 'Select';
     addBtn.textContent = 'Add';
+    sectionTitleEl.textContent = 'New Transaction';
     editTransactionIndex = '';
 }
 
 function editTransaction(transactionIndex) {
     let title = titleEl.value;
     let amount = amountEl.value;
-    let date = dateEl.value;
     let category = categoryEl.textContent;
     if (incomeBtn.classList.contains('income-btn-active')) {
         type = 'income';
@@ -148,20 +189,18 @@ function editTransaction(transactionIndex) {
 
     transactionsArr[transactionIndex].title = title;
     transactionsArr[transactionIndex].amount = amount;
-    transactionsArr[transactionIndex].date = date;
     transactionsArr[transactionIndex].category = category;
     transactionsArr[transactionIndex].type = type;
     localStorage.setItem('transactions', JSON.stringify(transactionsArr));
     displayTransactions();
-    clearInputFields();
+    // clearInputFields();
 }
 
-let expenseSum = 0, incomeSum = 0;
+ expenseSum = 0, incomeSum = 0;
 
 function displayTransactions(transactionsArr) {
     transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
     transactionsEl.innerHTML = '';
-    console.log('array: ' + transactionsArr);
     expenseSum = incomeSum = 0;
 
     transactionsArr.forEach((trans, i) => {
@@ -218,11 +257,17 @@ function displayTransactions(transactionsArr) {
     });
 
     console.log(expenseSum, incomeSum);
-    expences.textContent = new Intl.NumberFormat(userLocale, options).format(expenseSum);
-    income.textContent = new Intl.NumberFormat(userLocale, options).format(incomeSum);
+    const expValue = new Intl.NumberFormat(userLocale, options).format(expenseSum);
+    expences.textContent = expValue;
+    const incValue = new Intl.NumberFormat(userLocale, options).format(incomeSum);
+    income.textContent = incValue;
+    // expensesChart = expValue.parseFloat(originalString.replace(/[^0-9,]/g, '').replace(',', '.'));
+    // incomeChart = expValue.parseFloat(originalString.replace(/[^0-9,]/g, '').replace(',', '.'));
 
     const balance = incomeSum - expenseSum;
     balanceEl.textContent = new Intl.NumberFormat(userLocale, options).format(balance);
+    balanceChart = new Intl.NumberFormat(userLocale, options).format(balance);
+    updateChart(expenseSum, incomeSum);
 }
 
 function initialize() {
@@ -301,31 +346,52 @@ function handleDeleteAction(transId) {
 }
 
 function handleEditAction(transId) {
+    newTransContainer.scrollIntoView({behavior: 'smooth'});
     console.log(transId);
     const transactionIndex = transactionsArr.findIndex(trans => trans.id === Number(transId));
     console.log(transactionIndex);
     if (transactionIndex !== -1) {
         console.log(transactionsArr[transactionIndex]);
-        const { title, amount, date, category, type } = transactionsArr[transactionIndex];
+        const { title, amount, category, type } = transactionsArr[transactionIndex];
         editTransactionIndex = transactionIndex;
-        setFields(title, amount, date, category, type);
+        setFields(title, amount, category, type);
     }
 }
 
-function setFields(title, amount, date, category, type) {
+function setFields(title, amount, category, type) {
+    console.log('here');
+    sectionTitleEl.textContent = 'Edit Transaction';
     titleEl.value = title;
     amountEl.value = amount;
-    dateEl.value = date;
     categoryEl.textContent = category;
     addBtn.textContent = 'Save';
+
+    const existingButton = document.querySelector('.cancel-edit-btn');
+
+    if (!existingButton) {
+        let buttonHtml = `
+            <button class="cancel-edit-btn">Cancel</button>
+        `;
+        newTransContainer.insertAdjacentHTML('beforeend', buttonHtml);
+    }
+
+    // document.querySelector('.cancel-edit-btn').addEventListener('click', () => {
+    //     console.log('here');
+    //     // clearInputFields();
+    
+    // });
+
+    const categoryContainer = document.querySelector('.new-trans-category-container');
     if (type === 'expense') {
         expenseBtn.classList.add('expense-btn-active');
         incomeBtn.classList.remove('income-btn-active');
         newTransBtns.style.borderBottom ='3px solid var(--red-color)';
+        categoryContainer.classList.remove('hidden');
     } else {
         expenseBtn.classList.remove('expense-btn-active');
         incomeBtn.classList.add('income-btn-active');
         newTransBtns.style.borderBottom ='3px solid var(--dark-green-color)';
+        categoryContainer.classList.add('hidden');
     }
 }
 
@@ -343,12 +409,93 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
   
-  function showTooltip(tooltip) {
+function showTooltip(tooltip) {
     tooltip.style.visibility = "visible";
     tooltip.style.opacity = 1;
-  }
-  
-  function hideTooltip(tooltip) {
+}
+
+function hideTooltip(tooltip) {
     tooltip.style.visibility = "hidden";
     tooltip.style.opacity = 0;
+}
+
+// using event delegation for dynamicaly created element
+newTransContainer.addEventListener('click', (event) => {
+    if (event.target.classList.contains('cancel-edit-btn') || event.target.classList.contains('new-trans-btn')) {
+        console.log('here');
+        clearInputFields();
+
+        const cancelButton = newTransContainer.querySelector('.cancel-edit-btn');
+        if (cancelButton) {
+            cancelButton.remove();
+        }
+    }
+});
+
+
+function chart(expenseSum, incomeSum) {
+    const xValues = ["Expenses", "Income"];
+    const yValues = [expenseSum, incomeSum];
+    const barColors = [
+      "#b91d47",
+      "#00aba9",
+    ];
+    // myChart.update();
+    const myChart = new Chart("myChart", {
+        type: "doughnut",
+        data: {
+          labels: xValues,
+          datasets: [{
+            backgroundColor: barColors,
+            data: yValues
+          }]
+        },
+        options: {
+            // title: {
+            //     display: true,
+            //     fontSize: 18,
+            //     // padding: 0,
+            //     fontColor: '#0c0d5b',
+            //     // text: `Balance: \n${balanceChart}`,
+            // },
+            layout: {
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                  }
+            },
+            legend: {
+                display: false // Hide the legend labels
+            },
+            maintainAspectRatio: false
+            
+        }
+    });
+}
+
+// chart(expenseSum, incomeSum);
+
+  
+  // Function to update chart data
+  function updateChart(newExpenseSum, newIncomeSum) {
+    expenseSum = newExpenseSum;
+    incomeSum = newIncomeSum;
+    console.log(incomeSum);
+  
+    // Check if myChart is defined before trying to update
+    if (myChart) {
+      // Update chart data
+      myChart.data.datasets[0].data = [expenseSum, incomeSum];
+  
+      // Update chart
+      myChart.update();
+    }
   }
+  
+  // ... (rest of your code)
+  
+  // Call the chart function with initial data
+  updateChart(expenseSum, incomeSum);
+

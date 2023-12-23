@@ -27,26 +27,35 @@ body {
 .header-container {
     color: var(--dark-blue-color);
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
     margin: 0 auto;
     max-width: 100rem;
     border: 1px solid black;
-    padding: 4rem;
-    column-gap: 10rem;
+    padding: 1rem;
+    column-gap: 5rem;
     background-color: var(--tint-color);
-    /* justify-items: space-around; */
+    position: relative;
 }
 
-.balance-container {
-    grid-row: 1 / 4;
-    border: 1px solid green;
+.canvas-container {
+    grid-row: span 3;
 }
 
-.balance {
+.greeting-container {
+    grid-column: 3;
+    grid-row: 1;
+}
+
+.expenses-container, .income-container {
+    grid-column: 2;
+}
+
+.balance-number {
     font-size: 4rem;
     font-weight: 600;
 }
+
 
 .number {
     font-size: 3rem;
@@ -124,7 +133,7 @@ main {
 }
 
 .expense-button,
-.income-button{
+.income-button {
     cursor: pointer;
 }
 
@@ -147,9 +156,27 @@ main {
     align-self: end;
     cursor: pointer;
     border-radius: 1rem;
+    grid-column: 1;
+}
+
+.cancel-edit-btn {
+    width: 100%;
+    height: 4rem;
+    font-size: 2rem;
+    font-weight: 600;
+    border: 0.2rem solid var(--dark-blue-color);
+    background-color: #fff;
+    color: var(--dark-blue-color);
+    grid-column: 2;
+    align-self: end;
+    cursor: pointer;
+    border-radius: 1rem;
 }
 
 /* Style the custom dropdown container */
+/* .new-trans-category-container {
+    display: none;
+} */
 .custom-dropdown {
     position: relative;
     cursor: pointer;
@@ -194,6 +221,7 @@ main {
     border-top-right-radius: 0;
     width: 16rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
 }
 
 /* Style the dropdown list items */
@@ -201,6 +229,10 @@ main {
     padding: 8px;
     cursor: pointer;
     text-align: center;
+}
+
+.dropdown-list li:hover {
+    background-color: var(--tint-blue);
 }
 
 .dropdown-list li:not(:last-child) {
@@ -214,6 +246,10 @@ main {
 
 /* /////////////////////////////////////////////// */
 /* Transaction section */
+.transactions-container {
+    margin-top: 8rem;
+}
+
 .transactions {
     display: flex;
     flex-direction: column;
@@ -328,7 +364,7 @@ ion-icon {
 }
   
 .modal {
-    position: absolute;
+    position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -344,7 +380,7 @@ ion-icon {
 }
 
 .hidden {
-    display: none;
+    display: none !important;
 }
 
 .modal-btns {
