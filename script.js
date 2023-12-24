@@ -73,8 +73,8 @@ const categoryIcons = {
   const xValues = ["Expenses", "Income"];
   const yValues = [expenseSum, incomeSum];
   const barColors = [
-      "#b91d47",
-      "#00aba9",
+      "#c06c7a",
+      "#30606e",
   ];
 
 let myChart = new Chart("myChart", {
@@ -133,6 +133,9 @@ addBtn.addEventListener('click', function () {
     let title = titleEl.value;
     let amount = amountEl.value;
     let category = categoryEl.textContent;
+
+    
+    console.log(category);
     let type = 'expense';
     if (incomeBtn.classList.contains('income-btn-active')) {
         type = 'income';
@@ -140,6 +143,14 @@ addBtn.addEventListener('click', function () {
         type = 'expense';
     }
 
+    if (!title || !amount || (type === 'expense' && category === 'Select')) {
+        console.log('empty');
+        const errorMessage = document.querySelector('.error-message');
+        errorMessage.textContent = 'Please fill out all fields.';
+        return;
+    }
+    
+    console.log('patata');
     console.log(userLocale);
     const now = new Date();
     const userDate = new Intl.DateTimeFormat(userLocale, dateOptions).format(now);
@@ -226,6 +237,17 @@ function displayTransactions(transactionsArr) {
             } else {
                 transStyle = incomeRadioStyle;
             }
+            let text;
+            if (trans.title.length > 100) {
+                console.log(trans.title);
+                console.log("Text is more than 100 characters long.");
+                console.log(trans.title.length);
+                text = trans.title.split('').splice(0, 92).join('') + "...";
+                console.log(text);
+            } else {
+                text = trans.title;
+            }
+            
             transactionHtml = `
                 <div class="transaction" data-index="${trans.id}" style="${transStyle}">
                     <div class="icon-title-container">
@@ -234,8 +256,9 @@ function displayTransactions(transactionsArr) {
                             <span class="tooltiptext">${trans.category}</span>
                         </div>
                         
-                        <span class="title">${trans.title}</span>
+                        
                     </div>
+                    <span class="title">${text}</span>
                     <span class="date">${trans.date}</span>
                     <span class="amount">${new Intl.NumberFormat(userLocale, options).format(trans.amount)}</span>
                     <div class="icons">
@@ -421,8 +444,9 @@ function hideTooltip(tooltip) {
 
 // using event delegation for dynamicaly created element
 newTransContainer.addEventListener('click', (event) => {
-    if (event.target.classList.contains('cancel-edit-btn') || event.target.classList.contains('new-trans-btn')) {
+    if (event.target.classList.contains('cancel-edit-btn') || (event.target.classList.contains('new-trans-btn') && event.target.textContent === 'Save')) {
         console.log('here');
+        console.log(event.target.textContent);
         clearInputFields();
 
         const cancelButton = newTransContainer.querySelector('.cancel-edit-btn');
@@ -432,70 +456,24 @@ newTransContainer.addEventListener('click', (event) => {
     }
 });
 
-
-function chart(expenseSum, incomeSum) {
-    const xValues = ["Expenses", "Income"];
-    const yValues = [expenseSum, incomeSum];
-    const barColors = [
-      "#b91d47",
-      "#00aba9",
-    ];
-    // myChart.update();
-    const myChart = new Chart("myChart", {
-        type: "doughnut",
-        data: {
-          labels: xValues,
-          datasets: [{
-            backgroundColor: barColors,
-            data: yValues
-          }]
-        },
-        options: {
-            // title: {
-            //     display: true,
-            //     fontSize: 18,
-            //     // padding: 0,
-            //     fontColor: '#0c0d5b',
-            //     // text: `Balance: \n${balanceChart}`,
-            // },
-            layout: {
-                padding: {
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0
-                  }
-            },
-            legend: {
-                display: false // Hide the legend labels
-            },
-            maintainAspectRatio: false
-            
-        }
-    });
-}
-
-// chart(expenseSum, incomeSum);
-
   
-  // Function to update chart data
-  function updateChart(newExpenseSum, newIncomeSum) {
+// Function to update chart data
+function updateChart(newExpenseSum, newIncomeSum) {
     expenseSum = newExpenseSum;
     incomeSum = newIncomeSum;
-    console.log(incomeSum);
-  
+
     // Check if myChart is defined before trying to update
     if (myChart) {
-      // Update chart data
-      myChart.data.datasets[0].data = [expenseSum, incomeSum];
-  
-      // Update chart
-      myChart.update();
+        // Update chart data
+        myChart.data.datasets[0].data = [expenseSum, incomeSum];
+
+        // Update chart
+        myChart.update();
     }
-  }
-  
-  // ... (rest of your code)
-  
-  // Call the chart function with initial data
-  updateChart(expenseSum, incomeSum);
+}
+
+// ... (rest of your code)
+
+// Call the chart function with initial data
+updateChart(expenseSum, incomeSum);
 
