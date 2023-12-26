@@ -24,6 +24,11 @@ body {
     --tint-blue: #d2d2f9;
 }
 
+header {
+    width: 100%;
+    background-color: var(--tint-color);
+}
+
 .header-container {
     color: var(--dark-blue-color);
     display: grid;
@@ -33,7 +38,6 @@ body {
     max-width: 100rem;
     padding: 1rem;
     column-gap: 5rem;
-    background-color: var(--tint-color);
     position: relative;
 }
 
@@ -56,18 +60,19 @@ body {
     font-weight: 600;
 }
 
-
 .number {
     font-size: 3rem;
     font-weight: 600;
 }
-
+/* /////////////////////////////////////// */
 main {
     max-width: 90rem;
     margin: 0 auto;
     padding: 4rem;
 }
 
+/* //////////////////////////////////////// */
+/* NEW TRANSACTION */
 .new-transaction-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -140,41 +145,7 @@ main {
     font-size: 1.6rem;
 }
 
-.new-trans-btn {
-    width: 100%;
-    height: 4rem;
-    font-size: 2rem;
-    font-weight: 600;
-    background-color: var(--dark-blue-color);
-    color: #fff;
-    align-self: end;
-    cursor: pointer;
-    border-radius: 1rem;
-    grid-column: 1;
-    transition: all 0.3s;
-}
-
-.new-trans-btn:hover,
-.cancel-edit-btn:hover {
-    color: var(--dark-blue-color);
-    background-color: var(--tint-blue);
-}
-
-.cancel-edit-btn {
-    width: 100%;
-    height: 4rem;
-    font-size: 2rem;
-    font-weight: 600;
-    border: 0.2rem solid var(--dark-blue-color);
-    background-color: #fff;
-    color: var(--dark-blue-color);
-    grid-column: 2;
-    align-self: end;
-    cursor: pointer;
-    border-radius: 1rem;
-    transition: all 0.3s;
-}
-
+/* DROPDOWN LIST */
 /* Style the custom dropdown container */
 .custom-dropdown {
     position: relative;
@@ -236,6 +207,41 @@ main {
     display: block;
 }
 
+.new-trans-btn {
+    width: 100%;
+    height: 4rem;
+    font-size: 2rem;
+    font-weight: 600;
+    background-color: var(--dark-blue-color);
+    color: #fff;
+    align-self: end;
+    cursor: pointer;
+    border-radius: 1rem;
+    grid-column: 1;
+    transition: all 0.3s;
+}
+
+.new-trans-btn:hover,
+.cancel-edit-btn:hover {
+    color: var(--dark-blue-color);
+    background-color: var(--tint-blue);
+}
+
+.cancel-edit-btn {
+    width: 100%;
+    height: 4rem;
+    font-size: 2rem;
+    font-weight: 600;
+    border: 0.2rem solid var(--dark-blue-color);
+    background-color: #fff;
+    color: var(--dark-blue-color);
+    grid-column: 2;
+    align-self: end;
+    cursor: pointer;
+    border-radius: 1rem;
+    transition: all 0.3s;
+}
+
 .error-message {
     position: absolute;
     bottom: -3rem;
@@ -248,6 +254,48 @@ main {
     margin-top: 8rem;
 }
 
+/* RADIO BUTTONS */
+.radio-btns-container {
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    gap: 4rem;
+    margin: 3rem 0;
+}
+
+/* Style for the radio buttons */
+.radio-btn {
+    display: none; /* Hide the default radio buttons */
+}
+
+.custom-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 0.2rem solid var(--tint-blue);
+    color: var(--dark-blue-color);
+    background-color: white;
+    border-radius: 1rem;
+    transition: background-color 0.3s, color 0.3s;
+    font-weight: 600;
+}
+
+.custom-btn:hover {
+    background-color: var(--tint-blue);
+    color: var(--dark-blue-color);
+}
+
+/* Style for checked state */
+.radio-btn:checked + label {
+    background-color: var(--tint-blue);
+    color: var(--dark-blue-color);
+}
+
+.no-trans-yet {
+    color: var(--red-color);
+}
+
 .transactions {
     display: flex;
     flex-direction: column;
@@ -257,28 +305,28 @@ main {
 .transaction {
     width: 100%;
     display: grid;
-    grid-template-columns: 4fr 1fr 1fr 0.5fr;
-    grid-template-rows: 1fr;
-    justify-content: center;
+    grid-template-columns:  4fr 1fr 1fr 0.5fr;
     align-items: center;
     column-gap: 2rem;
     padding: 0.5rem 0.8rem;
     box-shadow:  0 0 24px rgba(0, 0, 0, 0.1);
     border-top-right-radius: 1rem;
     border-bottom-right-radius: 1rem;
+    border-top-left-radius: 0rem;
+    border-bottom-left-radius: 0rem;
     align-items: center;
-    justify-items: end;
+    justify-items: start;
 }
 
-.transaction .title {
-    grid-column: 1;
+ .title {
     font-weight: 600;
     font-size: 1.8rem;
     align-self: center;
     justify-self: start;
+    padding-bottom: 0.5rem;
 }
 
-.transaction .icons {
+ .icons {
     justify-self: end;
 }
 
@@ -287,19 +335,8 @@ main {
     background-color: var(--tint-red);
     padding: 0.8rem;
     cursor: pointer;
-    margin-top: 0.4rem;
-}
-
-.tooltip {
-    align-self: center;
-}
-
-.radio-btns-container {
-    margin: 0 auto;
-    display: flex;
-    justify-content: center;
-    gap: 4rem;
-    margin: 3rem 0;
+    margin-left: 0.8rem;
+    border-radius: 1rem;
 }
 
 .icon-title-container {
@@ -310,7 +347,8 @@ main {
     display: flex;
     align-items: center;
     gap: 1rem;
-    height: 100%;
+    padding-bottom: -1rem;
+    margin-bottom: -0.5rem;
 }
 
 .amount {
@@ -335,7 +373,6 @@ main {
 }
 
 ion-icon {
-    color: red;
     width: 2.4rem;
     height: 2.4rem;
 }
@@ -344,6 +381,46 @@ ion-icon {
     margin-bottom: 2rem;
 }
 
+/* TOOLTIP */
+.tooltip {
+    align-self: center;
+}
+.tooltip {
+    position: relative;
+}
+  
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 12rem;
+    background-color: var(--tint-blue);
+    color: var(--dark-blue-color);
+    text-align: center;
+    border-radius: 1rem;
+    padding: 0.4rem 0;
+    position: absolute;
+    z-index: 40;
+    bottom: 112%;
+    left: 60%;
+    margin-left: -6rem;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 1.5rem;
+}
+  
+.tooltip .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--tint-blue) transparent transparent transparent;
+}
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
 
 /* CLASSES TO MAKE MODAL WORK */
 .show-modal {
@@ -432,199 +509,4 @@ ion-icon {
     background-color: rgba(0, 0, 0, 0.6);
     backdrop-filter: blur(3px);
     z-index: 5;
-}
-
-/* Style for the radio buttons */
-.radio-btn {
-    display: none; /* Hide the default radio buttons */
-}
-
-.custom-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 16px;
-    cursor: pointer;
-    border: 0.2rem solid var(--tint-blue);
-    color: var(--dark-blue-color);
-    background-color: white;
-    border-radius: 1rem;
-    transition: background-color 0.3s, color 0.3s;
-    font-weight: 600;
-}
-
-.custom-btn:hover {
-    background-color: var(--tint-blue);
-    color: var(--dark-blue-color);
-}
-
-/* Style for checked state */
-.radio-btn:checked + label {
-    background-color: var(--tint-blue);
-    color: var(--dark-blue-color);
-}
-
-/* Tooltip */
-.tooltip {
-    position: relative;
-}
-  
-.tooltip .tooltiptext {
-    visibility: hidden;
-    width: 12rem;
-    background-color: var(--tint-blue);
-    color: var(--dark-blue-color);
-    text-align: center;
-    border-radius: 1rem;
-    padding: 0.4rem 0;
-    position: absolute;
-    z-index: 40;
-    bottom: 125%;
-    left: 50%;
-    margin-left: -6rem;
-    opacity: 0;
-    transition: opacity 0.3s;
-    font-size: 1.5rem;
-}
-  
-.tooltip .tooltiptext::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    margin-left: -5px;
-    border-width: 5px;
-    border-style: solid;
-    border-color: var(--tint-blue) transparent transparent transparent;
-}
-.tooltip:hover .tooltiptext {
-    visibility: visible;
-    opacity: 1;
-}
-
-
-/* 882 / 16 = 54.7 */
-/* ********************************* */
-/* BELOW  */
-/* ********************************* */
-@media (max-width: 56em) {
-    .transaction {
-        width: 100%;
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        grid-template-rows: 1fr 1fr;
-        justify-content: center;
-        align-items: center;
-        column-gap: 5rem;
-        padding: 0.5rem 0.8rem;
-        box-shadow:  0 0 24px rgba(0, 0, 0, 0.1);
-        border-top-right-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-    }
-    
-    .transaction .title {
-        grid-row: 1;
-        grid-column: span 3;
-        font-weight: 600;
-        font-size: 1.8rem;
-        align-self: center;
-    }
-    
-    .transaction .date {
-        grid-row: 2;
-        grid-column: 1;
-        align-self: end;
-    }
-    
-    .transaction .amount {
-        grid-row: 2;
-        grid-column: 2;
-        align-self: end;
-    }
-    
-    .transaction .icons {
-        grid-row: 2;
-        grid-column: 3;
-        justify-self: end;
-        align-self: end;
-    }
-}
-
-
-/* 680 / 16 = 35 */
-/* ********************************* */
-/* BELOW  */
-/* ********************************* */
-@media (max-width: 43em) {
-    .header-container {
-        color: var(--dark-blue-color);
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: 0.5fr 1fr 1fr 1fr;
-        margin: 0 auto;
-        height: 20rem;
-        max-width: 100rem;
-        padding: 1rem;
-        column-gap: 5rem;
-        background-color: var(--tint-color);
-        position: relative;
-    }
-    
-    .canvas-container {
-        grid-column: 2;
-        grid-row: 2 / span 3;
-    }
-    
-    .greeting-container {
-        grid-column: 2;
-        grid-row: 1;
-        position: absolute;
-    }
-    
-    .expenses-container, .income-container {
-        grid-column: 1;
-    }
-
-    .balance-container {
-        grid-row: 1 / span 2;
-
-    }
-    
-    .balance-number {
-        font-size: 3.8rem;
-        font-weight: 600;
-        
-    }
-    
-    .number {
-        font-size: 3rem;
-        font-weight: 600;
-    }
-}
-
-/* 560 / 16 = 35 */
-/* ********************************* */
-/* BELOW  */
-/* ********************************* */
-@media (max-width: 35em) {
-    html {
-        /* 9px / 16px = 0.5625 */
-        font-size: 56.25%; 
-    }
-
-    .radio-btns-container {
-        gap: 2rem;
-    }
-
-    .custom-btn {
-        padding: 8px 10px;
-        font-size: 14px;
-    }
-
-    .transaction {
-        column-gap: 2rem;
-    }
-
-    .header-container {
-        column-gap: 2rem;
-    }
 }

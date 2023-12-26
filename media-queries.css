@@ -1,0 +1,146 @@
+/* 882 / 16 = 54.7 */
+/* ********************************* */
+/* BELOW 882px */
+/* ********************************* */
+@media (max-width: 56em) {
+    .transaction {
+        width: 100%;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        justify-items: center;
+        column-gap: 5rem;
+    }
+
+    .icon-title-container {
+        justify-self: start;
+        grid-column: span 3;
+    }
+    
+    .transaction .title {
+        grid-row: 1;
+        grid-column: span 3;
+        font-weight: 600;
+        font-size: 1.8rem;
+        align-self: center;
+    }
+    
+    .transaction .date {
+        grid-row: 2;
+        grid-column: 1;
+        align-self: end;
+    }
+    
+    .transaction .amount {
+        grid-row: 2;
+        grid-column: 2;
+        align-self: end;
+    }
+    
+    .transaction .icons {
+        grid-row: 2;
+        grid-column: 3;
+        justify-self: end;
+        align-self: end;
+    }
+}
+
+
+/* 680 / 16 = 43 */
+/* ********************************* */
+/* BELOW 680px */
+/* ********************************* */
+@media (max-width: 43em) {
+    .header-container {
+        color: var(--dark-blue-color);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 0.5fr 1fr 1fr 1fr;
+        margin: 0 auto;
+        height: 20rem;
+        max-width: 100rem;
+        padding: 1rem;
+        column-gap: 5rem;
+        background-color: var(--tint-color);
+        position: relative;
+    }
+    
+    .canvas-container {
+        grid-column: 2;
+        grid-row: 2 / span 3;
+    }
+    
+    .greeting-container {
+        grid-column: 2;
+        grid-row: 1;
+        position: absolute;
+    }
+    
+    .expenses-container, .income-container {
+        grid-column: 1;
+    }
+
+    .balance-container {
+        grid-row: 1 / span 2;
+
+    }
+    
+    .balance-number {
+        font-size: 3.8rem;
+        font-weight: 600;
+        
+    }
+    
+    .number {
+        font-size: 3rem;
+        font-weight: 600;
+    }
+}
+
+/* 560 / 16 = 35 */
+/* ********************************* */
+/* BELOW 560px */
+/* ********************************* */
+@media (max-width: 35em) {
+    html {
+        /* 9px / 16px = 0.5625 */
+        font-size: 56.25%; 
+    }
+
+    .radio-btns-container {
+        gap: 2rem;
+    }
+
+    .custom-btn {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    .transaction {
+        column-gap: 2rem;
+    }
+
+    .header-container {
+        column-gap: 2rem;
+    }
+}
+
+/* ********************************* */
+/* BIG SCREENS  */
+/* ********************************* */
+@media (min-width: 80em) {
+    main {
+        max-width: 100%;
+        display: flex;
+        justify-content: center;
+        gap: 10rem;
+    }
+    
+    .new-transaction-container {
+        max-height: 20rem;
+    }
+    
+    .transactions-container {
+        margin-top: -2.8rem;
+        max-width: 70rem;
+    }
+}

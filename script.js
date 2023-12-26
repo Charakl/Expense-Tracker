@@ -39,6 +39,8 @@ let balanceChart;
 let expensesChart;
 let incomeChart;
 
+const canvasContainer = document.querySelector('.canvas-container');
+
 const userLocale = navigator.language || navigator.userLanguage;
 const options = {
     style: 'currency',
@@ -100,18 +102,15 @@ let myChart = new Chart("myChart", {
       },
       maintainAspectRatio: false
     }
-  });
+});
 
 newTransBtns.addEventListener('click', (e) => {
-    console.log(e.target);
     const categoryContainer = document.querySelector('.new-trans-category-container');
     if (e.target === expenseBtn) {
-        console.log('expense');
         expenseBtn.classList.add('expense-btn-active');
         incomeBtn.classList.remove('income-btn-active');
         categoryContainer.classList.remove('hidden');
     } else if (e.target === incomeBtn) {
-        console.log('income');
         expenseBtn.classList.remove('expense-btn-active');
         incomeBtn.classList.add('income-btn-active');
         categoryContainer.classList.add('hidden');
@@ -134,8 +133,6 @@ addBtn.addEventListener('click', function () {
     let amount = amountEl.value;
     let category = categoryEl.textContent;
 
-    
-    console.log(category);
     let type = 'expense';
     if (incomeBtn.classList.contains('income-btn-active')) {
         type = 'income';
@@ -143,23 +140,16 @@ addBtn.addEventListener('click', function () {
         type = 'expense';
     }
 
+    const errorMessage = document.querySelector('.error-message');
     if (!title || !amount || (type === 'expense' && category === 'Select')) {
-        console.log('empty');
-        const errorMessage = document.querySelector('.error-message');
         errorMessage.textContent = 'Please fill out all fields.';
         return;
+    } else {
+        errorMessage.textContent = '';
     }
     
-    console.log('patata');
-    console.log(userLocale);
     const now = new Date();
     const userDate = new Intl.DateTimeFormat(userLocale, dateOptions).format(now);
-
-    console.log("Text:", title);
-    console.log("Amount:", amount);
-    console.log("Date:", userDate);
-    console.log("Category:", category);
-    console.log("Type:", type);
 
     const newTransaction = {
         title: title,
@@ -172,7 +162,6 @@ addBtn.addEventListener('click', function () {
 
     transactionsArr.push(newTransaction);
     localStorage.setItem('transactions', JSON.stringify(transactionsArr));
-    console.log(transactionsArr);
     displayTransactions(transactionsArr);
 
     // Clear input fields
@@ -196,7 +185,6 @@ function editTransaction(transactionIndex) {
     } else {
         type = 'expense';
     }
-    console.log(title);
 
     transactionsArr[transactionIndex].title = title;
     transactionsArr[transactionIndex].amount = amount;
@@ -204,10 +192,9 @@ function editTransaction(transactionIndex) {
     transactionsArr[transactionIndex].type = type;
     localStorage.setItem('transactions', JSON.stringify(transactionsArr));
     displayTransactions();
-    // clearInputFields();
 }
 
- expenseSum = 0, incomeSum = 0;
+expenseSum = 0, incomeSum = 0;
 
 function displayTransactions(transactionsArr) {
     transactionsArr = JSON.parse(localStorage.getItem('transactions')) || [];
@@ -239,11 +226,7 @@ function displayTransactions(transactionsArr) {
             }
             let text;
             if (trans.title.length > 100) {
-                console.log(trans.title);
-                console.log("Text is more than 100 characters long.");
-                console.log(trans.title.length);
                 text = trans.title.split('').splice(0, 92).join('') + "...";
-                console.log(text);
             } else {
                 text = trans.title;
             }
@@ -251,14 +234,13 @@ function displayTransactions(transactionsArr) {
             transactionHtml = `
                 <div class="transaction" data-index="${trans.id}" style="${transStyle}">
                     <div class="icon-title-container">
-                        <div class="tooltip">
-                        <ion-icon name="${categoryIcons[trans.category]}" class="category-icon ${expensesRadioBtn.checked ? '' : 'hidden'}"></ion-icon>
-                            <span class="tooltiptext">${trans.category}</span>
+                        <div class="tooltip tooltip-trigger">
+                            <ion-icon name="${categoryIcons[trans.category]}" class="category-icon ${expensesRadioBtn.checked ? '' : 'hidden'}"></ion-icon>
+                            <span id="myTooltip" class="tooltiptext">${trans.category}</span>
                         </div>
-                        
-                        
+                        <span class="title">${text}</span>
                     </div>
-                    <span class="title">${text}</span>
+                    
                     <span class="date">${trans.date}</span>
                     <span class="amount">${new Intl.NumberFormat(userLocale, options).format(trans.amount)}</span>
                     <div class="icons">
@@ -268,7 +250,6 @@ function displayTransactions(transactionsArr) {
                 </div>
             `;
         }
-// ${expensesRadioBtn.checked ? `<ion-icon name="${categoryIcons[trans.category]}" class="category-icon"></ion-icon>` : ''}
 
         transactionsEl.insertAdjacentHTML('afterbegin', transactionHtml);
 
@@ -279,17 +260,25 @@ function displayTransactions(transactionsArr) {
         }
     });
 
-    console.log(expenseSum, incomeSum);
     const expValue = new Intl.NumberFormat(userLocale, options).format(expenseSum);
     expences.textContent = expValue;
     const incValue = new Intl.NumberFormat(userLocale, options).format(incomeSum);
     income.textContent = incValue;
-    // expensesChart = expValue.parseFloat(originalString.replace(/[^0-9,]/g, '').replace(',', '.'));
-    // incomeChart = expValue.parseFloat(originalString.replace(/[^0-9,]/g, '').replace(',', '.'));
 
     const balance = incomeSum - expenseSum;
     balanceEl.textContent = new Intl.NumberFormat(userLocale, options).format(balance);
     balanceChart = new Intl.NumberFormat(userLocale, options).format(balance);
+
+    const noTransYet = document.querySelector('.no-trans-yet');
+    if (expenseSum === 0 && incomeSum === 0) {
+        canvasContainer.classList.add('hidden');
+        noTransYet.textContent = '- No transactions yet -';
+    } else {
+        canvasContainer.classList.remove('hidden');
+        noTransYet.textContent = '';
+        updateChart(expenseSum, incomeSum);
+    }
+
     updateChart(expenseSum, incomeSum);
 }
 
@@ -309,7 +298,6 @@ function handleItemClick(event) {
         dropdownList.classList.remove("show");
         container.classList.remove("dropdown-shown");
         const selectedValue = selectedOption.textContent;
-        console.log(selectedValue);
     }
 }
 
@@ -335,11 +323,9 @@ transactionsEl.addEventListener('click', (event) => {
     const editButton = event.target.closest('#edit-btn');
     const deleteButton = event.target.closest('#delete-btn');
     const transactionId = event.target.closest('.transaction').getAttribute('data-index');
-    console.log(transactionId);
 
     if (editButton) {
         handleEditAction(transactionId);
-        console.log(editButton);
     } else if (deleteButton) {
         modal.classList.remove('hidden');
         overlay.classList.remove('hidden');
@@ -355,9 +341,7 @@ transactionsEl.addEventListener('click', (event) => {
 
 // Function to handle the Delete action
 function handleDeleteAction(transId) {
-    console.log(transId);
     const transactionIndex = transactionsArr.findIndex(trans => trans.id === Number(transId));
-    console.log(transactionIndex);
 
     if (transactionIndex !== -1) {
         transactionsArr.splice(transactionIndex, 1);
@@ -370,11 +354,8 @@ function handleDeleteAction(transId) {
 
 function handleEditAction(transId) {
     newTransContainer.scrollIntoView({behavior: 'smooth'});
-    console.log(transId);
     const transactionIndex = transactionsArr.findIndex(trans => trans.id === Number(transId));
-    console.log(transactionIndex);
     if (transactionIndex !== -1) {
-        console.log(transactionsArr[transactionIndex]);
         const { title, amount, category, type } = transactionsArr[transactionIndex];
         editTransactionIndex = transactionIndex;
         setFields(title, amount, category, type);
@@ -382,7 +363,6 @@ function handleEditAction(transId) {
 }
 
 function setFields(title, amount, category, type) {
-    console.log('here');
     sectionTitleEl.textContent = 'Edit Transaction';
     titleEl.value = title;
     amountEl.value = amount;
@@ -398,12 +378,6 @@ function setFields(title, amount, category, type) {
         newTransContainer.insertAdjacentHTML('beforeend', buttonHtml);
     }
 
-    // document.querySelector('.cancel-edit-btn').addEventListener('click', () => {
-    //     console.log('here');
-    //     // clearInputFields();
-    
-    // });
-
     const categoryContainer = document.querySelector('.new-trans-category-container');
     if (type === 'expense') {
         expenseBtn.classList.add('expense-btn-active');
@@ -418,35 +392,9 @@ function setFields(title, amount, category, type) {
     }
 }
 
-// Tooltip
-document.addEventListener("DOMContentLoaded", function () {
-    var tooltipTrigger = document.querySelector(".tooltip-trigger");
-    var tooltip = document.getElementById("myTooltip");
-  
-    tooltipTrigger.addEventListener("mouseover", function () {
-      showTooltip(tooltip);
-    });
-  
-    tooltipTrigger.addEventListener("mouseout", function () {
-      hideTooltip(tooltip);
-    });
-  });
-  
-function showTooltip(tooltip) {
-    tooltip.style.visibility = "visible";
-    tooltip.style.opacity = 1;
-}
-
-function hideTooltip(tooltip) {
-    tooltip.style.visibility = "hidden";
-    tooltip.style.opacity = 0;
-}
-
 // using event delegation for dynamicaly created element
 newTransContainer.addEventListener('click', (event) => {
     if (event.target.classList.contains('cancel-edit-btn') || (event.target.classList.contains('new-trans-btn') && event.target.textContent === 'Save')) {
-        console.log('here');
-        console.log(event.target.textContent);
         clearInputFields();
 
         const cancelButton = newTransContainer.querySelector('.cancel-edit-btn');
@@ -471,8 +419,6 @@ function updateChart(newExpenseSum, newIncomeSum) {
         myChart.update();
     }
 }
-
-// ... (rest of your code)
 
 // Call the chart function with initial data
 updateChart(expenseSum, incomeSum);
